@@ -13,6 +13,8 @@ class Num {
 }
 
 class Bool {
+	static T = new Bool(true);
+	static F = new Bool(false);
 	constructor(value) {
 		this.value = value;
 	}
@@ -91,9 +93,9 @@ const fold = (params, result, fn) => {
 	}
 };
 
-const short = (check, result = (...args) => args[0]) => {
+const short = (check = (...args) => args[0], result = (...args) => args[0]) => {
 	return (...args) => {
-		return check.equals(args[0]) ? result(...args) : null;
+		return check(...args) ? result(...args) : null;
 	};
 };
 
@@ -107,15 +109,40 @@ const chain = (...fns) => {
 	};
 };
 
+const compare = fn => fold([Num, Num], Bool, fn);
+
 const OPERANDS = {
 	"+": fold([Num, Num], Num, (a, b) => a + b),
 	"-": fold([Num, Num], Num, (a, b) => a - b),
 	"*": fold([Num, Num], Num, (a, b) => a * b),
-	"&&": short(new Bool(false)),
-	"||": short(new Bool(true)),
+	"%": fold([Num, Num], Num, (a, b) => a % b),
+	"<": compare((a, b) => a < b),
+	">": compare((a, b) => a > b),
+	"<=": compare((a, b) => a <= b),
+	">=": compare((a, b) => a >= b),
+	"=": compare((a, b) => a === b),
+	"and": chain(
+		fold([Bool, Bool], Bool, (a, b) => a && b),
+		(a, b) => {
+			if (Bool.F.equals(a) || Bool.F.equals(b))
+				return false;
+
+			if (Bool.T.equals(a)) return b;
+			if (Bool.T.equals(b)) return a;
+
+			return null;
+		}
+	),
+	"or": chain(
+		fold([Bool, Bool], Bool, (a, b) => a || b),
+		short((a, b) => Bool.T.equals(a) || Bool.T.equals(b), () => Bool.T)
+	),
+	"not": chain(
+		fold([Bool], Bool, a => !a)
+	),
 	"=>": chain(
-		short(new Bool(false), () => new Bool(true)),
-		short(new Bool(true), (p, q) => q)
+		short((p, q) => Bool.F.equals(p) || Bool.T.equals(q), () => Bool.T),
+		short((p, q) => Bool.T.equals(p), (p, q) => q)
 	),
 	"distinct": (...args) => {
 		if (!args.every(arg => (
@@ -245,6 +272,8 @@ class Evaluator {
 		for (let i = 0; i < inputs.length; i++)
 			this.assign(`Input_${i + 1}`, new Num(inputs[i]));
 		this.assign("Sqrt", this.numeric(x => Math.sqrt(x)));
+		this.assign("Min", this.numeric((a, b) => Math.min(a, b)));
+		this.assign("Max", this.numeric((a, b) => Math.max(a, b)));
 	}
 	push() {
 		this.scope = new Scope(this.scope);
@@ -340,6 +369,9 @@ class Evaluator {
 		}[node.op] ?? node.op;
 
 		return smt(op, left, right);
+	}
+	Logic(node) {
+		return this.Binary(node);
 	}
 	Sum(node) {
 		return this.Binary(node);
