@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SSMT Interactive Compiler</title>
+	<script src="index.js" type="module"></script>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<h1>SSMT Interactive Compiler</h1>
+	<div id="inputRow">
+		<div>
+			<label for="inputs">Inputs:</label>
+			<input id="inputs" placeholder="1 2 3 ...">
+		</div>
+		<div>
+			<label for="logic">Logic: </label>
+			<select id="logic">
+				<option>AUFLIRA</option>
+				<option>QF_AX</option>
+				<option>QF_IDL</option>
+				<option>QF_UF</option>
+				<option>QF_BV</option>
+				<option>QF_RDL</option>
+				<option>QF_LIA</option>
+				<option>QF_UFIDL</option>
+				<option>QF_UFBV</option>
+				<option>QF_ABV</option>
+				<option>QF_LRA</option>
+				<option>QF_NIA</option>
+				<option>LIA</option>
+				<option>QF_ALIA</option>
+				<option>QF_UFLIA</option>
+				<option>QF_UFLRA</option>
+				<option>QF_AUFBV</option>
+				<option>QF_LRA</option>
+				<option>QF_NRA</option>
+				<option>QF_NIA</option>
+				<option>ALIA</option>
+				<option>QF_AUFLIA</option>
+				<option>QF_UFNIA</option>
+				<option>UFLRA</option>
+				<option>QF_UFNRA</option>
+				<option>NRA</option>
+				<option>UFNIA</option>
+				<option>AUFLIA</option>
+				<option>AUFNIRA</option>
+			</select>
+		</div>
+		<div>
+			<button id="copyOutput">Copy SMTLib</button>
+		</div>
+	</div>
+	<main id="panels">
+		<textarea id="input" spellcheck="false" placeholder="x = 5"></textarea>
+		<pre id="output"></pre>
+	</main>
+</body>
+</html>

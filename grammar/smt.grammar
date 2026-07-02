@@ -1,0 +1,7 @@
+whitespace = hidden /\s+/
+symbol = /[()]/
+token = /[^\s()]*/
+
+Expr = "(" items:Expr* ")" | value:token
+
+root = items:Expr*

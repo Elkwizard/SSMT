@@ -1,0 +1,96 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: sans-serif;
+}
+
+:root {
+	--white: #efefef;
+	--black: black;
+	--blue: #563456;
+	--gray: #ddd;
+}
+
+body {
+	background: var(--blue);
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+	padding: 1em;
+}
+
+h1 {
+	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+	letter-spacing: 0.1ch;
+	font-weight: normal;
+	color: var(--white);
+}
+
+#panels {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+
+
+	> :first-child {
+		border-right: 1px var(--white) solid;
+	}
+
+	> * {
+		flex-basis: 0;
+		flex-grow: 1;
+	}
+}
+
+
+#output, #input {
+	overflow: auto;
+	border: 1px var(--white) solid;
+	font-family: "Cascadia Code", monospace;
+	padding: 0.75em;
+	max-height: calc(100vh - 8rem);
+}
+
+#input {
+	resize: none;
+	color: var(--black);
+}
+
+#output {
+	color: var(--white);
+	font-size: 0.8em;
+}
+
+#inputRow {
+	display: flex;
+	flex-direction: row;
+	gap: 1em;
+
+	> * {
+		label {
+			color: var(--white);
+		}
+
+		> :last-child  {
+			background: var(--white);
+			padding: 0.3em;
+			border-radius: 0.3em;
+			color: var(--black);
+			border: none;
+			font-size: 1rem;
+
+			&:hover {
+				background: var(--gray);
+			}
+		}
+	}
+
+	> :last-child {
+		margin-left: auto;
+	}
+}
+
+button {
+	cursor: pointer;
+}

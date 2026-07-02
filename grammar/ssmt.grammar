@@ -1,0 +1,72 @@
+whitespace = hidden /\s+/
+comment = hidden /\/\/.*/
+keyword = literals /\w+/
+number = /\d+/
+id = /[^\W_]+/
+comma = /,\s/
+symbol = literals /\W+/
+
+FiniteRange = vars:Reference{comma} "on" "[" lo:Expression comma hi:Expression "]"
+UniversalRange = vars:Reference{comma} ":" type:Type
+
+ReferenceLike = name:id ("_" indices:BaseExpression{","})?
+
+@begin Type
+	@begin Reference
+		TypeReference = $ReferenceLike
+	@end
+	LiteralType = name:("Int" | "Bool" | "Real")
+	TupleType = "(" factors:SimpleType{comma} ")"
+	SimpleType = TupleType | LiteralType | TypeReference
+	FnType = params:SimpleType{comma} "->" result:SimpleType
+	Type = FnType | SimpleType
+@end
+
+AggregateType = "sum" | "distinct"
+CallSuffix = "(" args:Expression{comma} ")"
+IndexSuffix = "." index:number
+Step = CallSuffix | IndexSuffix
+
+// helpers for cleaning
+Call = fn:Expression $CallSuffix
+Index = tuple:Expression $IndexSuffix
+
+@begin Expression
+	@begin Reference
+		Reference = $ReferenceLike
+	@end
+	Nested = "(" replace:Expression ")"
+	Block = weak:"weak"? "{" $root "}"
+	Number = value:number
+	Bool = value:("true" | "false")
+	New = "new" type:TypeReference "(" args:Expression{comma} ")"
+	Fn = "fn" "(" params:Reference{comma} ")" body:Expression
+	BaseExpression = Nested | Block | Reference | Number | Bool | New | Fn
+	Term = base:Term step:Step | BaseExpression
+
+	Expression = operators Term {
+		custom Aggregate (type:AggregateType range:FiniteRange "of" body:Aggregate)
+		prefix Prefix ("-" | "~")
+		left Product ("*" | "/" | "%")
+		left Sum ("+" | "-")
+		left Compare ("=" | "!=" | "<=" | ">=" | "<" | ">")
+		left Logic ("and" | "or")
+		right Implies ("=>")
+	}
+@end
+
+@begin Declaration
+	VarDeclare = name:Reference ":" type:Type
+	TypeDeclare = "type" name:Reference "=" type:Type
+	Declare = TypeDeclare | PropDeclare | FnDeclare | VarDeclare
+@end
+
+@begin Statement
+	Loop = "for" range:(FiniteRange | UniversalRange) body:Statement
+	SetLogic = "logic" id:id
+	Show = "show" ref:Reference
+	Assign = name:Reference ":=" value:Expression
+	Statement = Show | SetLogic | Declare | Loop | Assign | Expression
+@end
+
+root = stmts:Statement*

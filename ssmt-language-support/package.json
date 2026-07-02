@@ -1,0 +1,38 @@
+{
+	"name": "ssmt-language-support",
+	"displayName": "Super SMT Language Support",
+	"description": "Provides syntax highlighting for .ssmt files written in Super SMT",
+	"publisher": "h-hays",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.105.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "ssmt",
+				"aliases": [
+					"Super SMT"
+				],
+				"extensions": [
+					".ssmt"
+				],
+				"configuration": "./language-configuration.json",
+				"icon": {
+					"dark": "./Icon.svg",
+					"light": "./Icon.svg"
+				}
+			}
+		],
+		"grammars": [
+			{
+				"language": "ssmt",
+				"scopeName": "source.ssmt",
+				"path": "./syntaxes/ssmt.tmLanguage.json"
+			}
+		]
+	}
+}

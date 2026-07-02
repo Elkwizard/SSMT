@@ -1,0 +1,35 @@
+logic UFLIRA
+
+default : Int
+
+N := Sqrt(InputCount)
+
+// permutation
+f : Int -> Real
+for i on [1, InputCount] {
+	f(i) = Input_i
+	1 <= x_i
+	x_i <= InputCount
+}
+
+default : Real
+
+distinct i on [1, InputCount] of x_i
+
+for i, j on [1, N]
+	c_i,j = f(x_((i - 1) * N + j))
+
+// magic square constraint
+for i on [1, N] {
+	k = sum j on [1, N] of c_i,j
+	k = sum j on [1, N] of c_j,i
+}
+
+k = sum i on [1, N] of c_i,i
+k = sum i on [1, N] of c_i,(N - i + 1)
+
+// display results
+for i, j on [1, N]
+	show c_i,j
+
+show k
