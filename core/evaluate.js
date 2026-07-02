@@ -444,7 +444,19 @@ class Evaluator {
 		return this.Binary(node);
 	}
 	Compare(node) {
-		return this.Binary(node);
+		const values = node.values.map(value => this.visit(value));
+		if (values.length === 1) return values[0];
+
+		const compares = [];
+		for (let i = 0; i < values.length - 1; i++) {
+			const a = values[i];
+			const b = values[i + 1];
+			const op = node.ops[i];
+
+			compares.push(smt(op, a, b));
+		}
+
+		return this.and(node, compares);
 	}
 	Number(node) {
 		return new Num(+node.value);

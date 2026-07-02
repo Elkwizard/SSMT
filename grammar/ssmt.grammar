@@ -49,7 +49,7 @@ Index = tuple:Expression $IndexSuffix
 		prefix Prefix ("-" | "~")
 		left Product ("*" | "/" | "%")
 		left Sum ("+" | "-")
-		left Compare ("=" | "!=" | "<=" | ">=" | "<" | ">")
+		custom Compare (values:last{ops:("<" | ">" | "<=" | ">=" | "=")})
 		left Logic ("and" | "or")
 		right Implies ("=>")
 	}

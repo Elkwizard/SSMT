@@ -8,8 +8,7 @@ N := Sqrt(InputCount)
 f : Int -> Real
 for i on [1, InputCount] {
 	f(i) = Input_i
-	1 <= x_i
-	x_i <= InputCount
+	1 <= x_i <= InputCount
 }
 
 default : Real

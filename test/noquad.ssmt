@@ -45,6 +45,6 @@ CheckWithStart := fn (k_0, k_1, k_2, k_3) {
 }
 
 for i_1, i_2, i_3, i_4 on [1, 5]
-	(i_1 < i_2 and i_2 < i_3 and i_3 < i_4) => {
+	(i_1 < i_2 < i_3 < i_4) => {
 		CheckWithStart(i_1, i_2, i_3, i_4)
 	}
