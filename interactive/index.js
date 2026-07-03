@@ -66,4 +66,6 @@ addEventListener("load", () => {
 		navigator.clipboard.writeText(compiledOutput);
 		alert("Copied!");
 	});
+
+	updateOutput();
 });
