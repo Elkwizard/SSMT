@@ -76,7 +76,7 @@ Index = tuple:Expression $IndexSuffix
 @end
 
 @begin Statement
-	SetLogic = "logic" id:id
+	SetLogic = "logic" id:id{"_"}
 	Show = "show" ref:Reference
 	Assign = name:Reference ":=" value:Expression
 	Statement = Show | SetLogic | Declare | Assign | Expression

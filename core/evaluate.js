@@ -612,7 +612,7 @@ class Evaluator {
 		return this.evalScope(node, !node.weak);
 	}
 	SetLogic(node) {
-		this.logic = node.id;
+		this.logic = node.id.join("_");
 	}
 	root(node) {
 		const assertion = this.evalScope(node, true);
