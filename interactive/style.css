@@ -47,9 +47,12 @@ h1 {
 #output, #input {
 	overflow: auto;
 	border: 1px var(--white) solid;
-	font-family: "Cascadia Code", monospace;
 	padding: 0.75em;
 	max-height: calc(100vh - 8rem);
+
+	&, * {
+		font-family: "Cascadia Code", monospace;
+	}
 }
 
 #input {
@@ -61,10 +64,6 @@ h1 {
 #output {
 	color: var(--white);
 	font-size: 0.8em;
-
-	* {
-		white-space: pre;
-	}
 }
 
 #inputRow {
