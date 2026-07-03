@@ -31,7 +31,7 @@
 				"match": "\\b(true|false)\\b"
 			}, {
 				"name": "keyword.operator.arithmetic",
-				"match": "-|\\+|\\*|%|\\/|~|\\b(or|and)\\b|=>"
+				"match": "-|\\^|\\+|\\*|%|\\/|~|\\b(or|and)\\b|=>"
 			}, {
 				"name": "keyword.operator.new",
 				"match": "\\bnew\\b"
@@ -39,7 +39,7 @@
 				"name": "keyword.control",
 				"match": "\\b(for|on|of|logic)\\b"
 			}, {
-				"name": "puncutation.separator.comma",
+				"name": "punctuation.separator.comma",
 				"match": "[_,.]"
 			}]
 		},
