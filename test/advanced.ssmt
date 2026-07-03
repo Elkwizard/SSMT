@@ -1,0 +1,6 @@
+logic AUFLIRA
+
+Reduce := fn (N) fn (f, x_1..N)
+	(N = 1 and x_1) or (N > 1 and f(x_1, Reduce(N - 1)(f, x_2..N)))
+
+print Reduce(4)(Min, 6, 4, 5, 5)

@@ -7,7 +7,7 @@ import { evaluate } from "./core/evaluate.js";
 import { fileURLToPath } from "node:url";
 import { typeset } from "./core/typeset.js";
 import { AST as SMT, parse as parseSMT } from "./grammar/parseSMT.js";
-import { parseArgs } from "node:util";
+import { parseArgs, styleText } from "node:util";
 import { summarize } from "./core/summarize.js";
 
 const {
@@ -32,7 +32,9 @@ const content = fs.readFileSync(file, "utf-8");
 const root = clean(parse(content));
 const { smtlib, shown } = evaluate(
 	root, inputs.map(input => +input),
-	(msg, loc) => console.log(`line ${loc} | print: ${msg}`)
+	(msg, loc) => {
+		console.log(styleText("gray", `[line ${loc}]:`), msg)
+	}
 );
 const outPath = file.replace(/\.ssmt$/, ".smt2");
 
