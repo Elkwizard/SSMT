@@ -134,7 +134,7 @@ Universal for expressions are a notation for the `(forall ...)` operator in SMTL
 ```rust
 for x, y : Real P(x, y)
 ```
-Where `P(x, y)` stands for any expression, which has access to `x` and `y`. Using the standard mathematical trick for domain restriction, one can quantify over all *positive* integers, for example, using an implication (the first set of parentheses are optional, but included for clarity):
+Where `P(x, y)` stands for any expression, which has access to `x` and `y`. Using the standard mathematical trick for domain restriction, you can quantify over all *positive* integers, for example, using an implication (the first set of parentheses is optional, but included for clarity):
 ```rust
 for x : Int (x > 0) => P(x)
 ```
