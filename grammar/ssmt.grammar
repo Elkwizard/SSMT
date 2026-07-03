@@ -57,10 +57,10 @@ Index = tuple:Expression $IndexSuffix
 	Term = base:Term step:Step | BaseExpression
 
 	Expression = operators Term {
-		custom Aggregate (type:AggregateType range:FiniteRange "of" body:Aggregate)
 		prefix Prefix ("-" | "~")
 		right Power ("^")
 		left Product ("*" | "/" | "%")
+		custom Aggregate (type:AggregateType range:FiniteRange "of" body:Aggregate)
 		left Sum ("+" | "-")
 		custom Compare (values:last{ops:("<" | ">" | "<=" | ">=" | "=")})
 		left Logic ("and" | "or")
