@@ -3,6 +3,26 @@ const { make } = AST;
 
 AST.prototype.toString = () => "";
 
+const expandSubscriptRanges = root => {
+	root.transform("Variadic", node => {
+		if (!("name" in node)) return node;
+
+		const { name, lo, hi } = node;
+
+		const result = make[node.constructor.name](
+			make.FiniteRange(
+				make.ReferenceList([
+					make.Reference("$", [])
+				]),
+				lo, hi
+			),
+			make.Reference(name, [make.Reference("$", [])])
+		).from(node);
+
+		return result;
+	});
+};
+
 export function clean(root) {
 	root.forEach([AST.Block, AST.root], node => {
 		node.stmts ??= [];
@@ -20,6 +40,10 @@ export function clean(root) {
 				return make.Call(base, step.args).from(node);
 		}
 	});
+
+	expandSubscriptRanges(root);
+
+	AST.debugRoot = root;
 
 	return root;
 }

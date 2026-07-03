@@ -37,7 +37,7 @@ class Var {
 		if (type instanceof FnType)
 			return smt(
 				"declare-fun", name,
-				smt(type.params.map(
+				smt(...type.params.map(
 					param => param.toSMT()
 				)),
 				type.result.toSMT()
@@ -127,7 +127,7 @@ const OPERATORS = {
 		fold([Bool, Bool], Bool, (a, b) => a && b),
 		(a, b) => {
 			if (Bool.F.equals(a) || Bool.F.equals(b))
-				return false;
+				return Bool.F;
 
 			if (Bool.T.equals(a)) return b;
 			if (Bool.T.equals(b)) return a;
@@ -243,6 +243,11 @@ class Scope {
 	}
 	*[Symbol.iterator]() {
 		yield* this.vars.values();
+		if (this.parent) yield* this.parent;
+	}
+	*entries() {
+		yield* this.vars;
+		if (this.parent) yield* this.parent.entries();
 	}
 	has(name) {
 		return this.vars.has(name) ?? this.parent?.has(name);
@@ -300,6 +305,15 @@ class Evaluator {
 
 		return result;
 	}
+	range(node) {
+		const lo = this.number(node.lo).value;
+		const hi = this.number(node.hi).value;
+
+		if (!Number.isInteger(lo) || !Number.isInteger(hi))
+			node.error(`Range bounds must be integers, got [${lo}, ${hi}]`);
+
+		return [lo, hi];
+	}
 	getName(name) {
 		const indices = name.indices.map(inx => this.number(inx).value);
 		return [name.name, ...indices].join("_");
@@ -340,22 +354,45 @@ class Evaluator {
 		return this.and(node, bools);
 	}
 	forEachInRange(range, body) {
-		const lo = this.number(range.lo).value;
-		const hi = this.number(range.hi).value;
-
-		if (!Number.isInteger(lo) || !Number.isInteger(hi))
-			range.error(`Range bounds must be integers, got [${lo}, ${hi}]`);
+		const [lo, hi] = this.range(range);
 
 		const size = hi - lo + 1;
 
-		for (const option of enumerate(range.vars.length, size)) {
+		const names = this.visit(range.vars);
+		for (const option of enumerate(names.length, size)) {
 			this.push();
 			for (let i = 0; i < option.length; i++)
-				this.assign(this.getName(range.vars[i]), new Num(option[i] + lo));
+				this.assign(names[i], new Num(option[i] + lo));
 			this.scope.strong = false;
 			body();
 			this.pop();
 		}
+	}
+	ReferenceList(list) {
+		return list.pieces
+			.flatMap(piece => {
+				if (piece instanceof AST.Reference)
+					return [this.getName(piece)];
+
+				const names = [];
+				this.forEachInRange(piece.range, () => {
+					names.push(this.getName(piece.body));
+				});
+				return names;
+			});
+	}
+	ExpressionList(list) {
+		return list.pieces
+			.flatMap(piece => {
+				if (!(piece instanceof AST.VariadicExp))
+					return [this.visit(piece)];
+
+				const values = [];
+				this.forEachInRange(piece.range, () => {
+					values.push(this.visit(piece.body));
+				});
+				return values;
+			})
 	}
 	Index(node) {
 		return smt(
@@ -383,7 +420,7 @@ class Evaluator {
 	}
 	New(node) {
 		const type = this.visit(node.type);
-		const args = node.args.map(arg => this.visit(arg));
+		const args = this.visit(node.args);
 		if (!(type instanceof TupleType))
 			node.error(`Cannot construct non-tuple type '${type}'`);
 
@@ -397,7 +434,7 @@ class Evaluator {
 	}
 	Call(node) {
 		const fn = this.visit(node.fn);
-		const args = node.args.map(arg => this.visit(arg));
+		const args = this.visit(node.args);
 
 		try {
 			if (fn instanceof Fn)
@@ -443,7 +480,10 @@ class Evaluator {
 		return smt(op, this.visit(node.target));
 	}
 	Implies(node) {
-		return this.Binary(node);
+		const premise = this.visit(node.left);
+		if (Bool.F.equals(premise))
+			return Bool.T;
+		return smt("=>", premise, this.visit(node.right));
 	}
 	Power(node) {
 		return this.Binary(node);
@@ -479,7 +519,7 @@ class Evaluator {
 		}
 
 		const domain = this.visit(node.range.type);
-		const vars = node.range.vars.map(v => this.getName(v));
+		const vars = this.visit(node.range.vars);
 		this.push();
 		for (const name of vars)
 			this.assign(name, new Var(name, domain));
@@ -515,7 +555,7 @@ class Evaluator {
 			throw `Wrong number of arguments. Expected ${params}, got ${args}`;
 	}
 	Fn(node) {
-		const params = node.params.map(param => this.getName(param));
+		const params = this.visit(node.params);
 		const closure = this.scope;
 
 		return new Fn((...args) => {

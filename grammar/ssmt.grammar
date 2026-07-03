@@ -6,8 +6,20 @@ id = /[^\W_]+/
 comma = /,\s/
 symbol = literals /\W+/
 
-FiniteRange = vars:Reference{comma} "on" "[" lo:Expression comma hi:Expression "]"
-UniversalRange = vars:Reference{comma} ":" type:Type
+@begin Variadic
+	VariadicLike = <E> ".." range:FiniteRange body:$E | name:id "_" lo:BaseExpression ".." hi:BaseExpression
+	VariadicExp = VariadicLike<BaseExpression>
+	VariadicRef = VariadicLike<ReferenceLike>
+@end
+
+@begin List
+	ListLike = <E, V> pieces:($V | $E){comma}
+	ReferenceList = ListLike<Reference, VariadicRef>
+	ExpressionList = ListLike<Expression, VariadicExp>
+@end
+
+FiniteRange = vars:ReferenceList "on" "[" lo:Expression comma hi:Expression "]"
+UniversalRange = vars:ReferenceList ":" type:Type
 
 ReferenceLike = name:id ("_" indices:BaseExpression{","})?
 
@@ -23,7 +35,7 @@ ReferenceLike = name:id ("_" indices:BaseExpression{","})?
 @end
 
 AggregateType = "sum" | "distinct"
-CallSuffix = "(" args:Expression{comma} ")"
+CallSuffix = "(" args:ExpressionList ")"
 IndexSuffix = "." index:number
 Step = CallSuffix | IndexSuffix
 
@@ -39,8 +51,8 @@ Index = tuple:Expression $IndexSuffix
 	Block = weak:"weak"? "{" $root "}"
 	Number = value:number
 	Bool = value:("true" | "false")
-	New = "new" type:TypeReference "(" args:Expression{comma} ")"
-	Fn = "fn" "(" params:Reference{comma} ")" body:Expression
+	New = "new" type:TypeReference "(" args:ExpressionList ")"
+	Fn = "fn" "(" params:ReferenceList ")" body:Expression
 	BaseExpression = Nested | Block | Reference | Number | Bool | New | Fn
 	Term = base:Term step:Step | BaseExpression
 
@@ -53,6 +65,7 @@ Index = tuple:Expression $IndexSuffix
 		custom Compare (values:last{ops:("<" | ">" | "<=" | ">=" | "=")})
 		left Logic ("and" | "or")
 		right Implies ("=>")
+		custom Loop ("for" range:(FiniteRange | UniversalRange) body:Statement)
 	}
 @end
 
@@ -63,11 +76,10 @@ Index = tuple:Expression $IndexSuffix
 @end
 
 @begin Statement
-	Loop = "for" range:(FiniteRange | UniversalRange) body:Statement
 	SetLogic = "logic" id:id
 	Show = "show" ref:Reference
 	Assign = name:Reference ":=" value:Expression
-	Statement = Show | SetLogic | Declare | Loop | Assign | Expression
+	Statement = Show | SetLogic | Declare | Assign | Expression
 @end
 
 root = stmts:Statement*
