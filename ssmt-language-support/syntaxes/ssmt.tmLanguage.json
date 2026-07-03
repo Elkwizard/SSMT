@@ -37,7 +37,7 @@
 				"match": "\\bnew\\b"
 			}, {
 				"name": "keyword.control",
-				"match": "\\b(for|on|of|logic)\\b"
+				"match": "\\b(for|on|of|to|logic)\\b"
 			}, {
 				"name": "punctuation.separator.comma",
 				"match": "[_,.]"
@@ -53,7 +53,7 @@
 				"match": "[A-Z][^\\W_]*(?=\\s*\\()"
 			}, {
 				"name": "entity.name.function",
-				"match": "[^\\W_]+(?=\\s*\\()"
+				"match": "[^\\W_]+(?=\\s*(\\(|:=\\s*fn\\b))"
 			}, {
 				"name": "support.variable",
 				"match": "[A-Z][^\\W_]*"

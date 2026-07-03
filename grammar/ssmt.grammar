@@ -18,7 +18,7 @@ symbol = literals /\W+/
 	ExpressionList = ListLike<Expression, VariadicExp>
 @end
 
-FiniteRange = vars:ReferenceList "on" "[" lo:Expression comma hi:Expression "]"
+FiniteRange = vars:ReferenceList ("on" "[" lo:Expression comma hi:Expression "]" | "to" hi:BaseExpression)
 UniversalRange = vars:ReferenceList ":" type:Type
 
 ReferenceLike = name:id ("_" indices:BaseExpression{","})?
@@ -66,6 +66,7 @@ Index = tuple:Expression $IndexSuffix
 		left Logic ("and" | "or")
 		right Implies ("=>")
 		custom Loop ("for" range:(FiniteRange | UniversalRange) body:Statement)
+		prefix Print ("print")
 	}
 @end
 

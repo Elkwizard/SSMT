@@ -112,6 +112,11 @@ This implicitly declares 25 subscripted `x_*` SMT variables of type `Int` and as
 
 These aggregates all use the same syntax as `sum`, just with a different initial keyword.
 
+**Note:** As a shorthand, if the lower bound is `1` and the upper bound is a simple expression (as in subscripts), then the aggregate can be written as:
+```js
+sum i, j to 5 of x_i,j = 50
+```
+
 ## For Expressions
 As in many languages, SSMT features for loops. These loops come in two flavors, ranged and universal, which differ only in what they iterate over. All for loops are expressions (rather than typical loops, which are statements), and their value is the logical AND of their body's values over all iterations. If the for loop's body does not produce a value (an assignment or declaration), then the for loop doesn't produce a value either.
 
@@ -120,7 +125,9 @@ Ranged for expressions are very similar in form and function to aggregate expres
 ```js
 for i on [1, 7] x_i < y_i
 ```
-Just like aggregates, multiple variables can be declared in the loop header, which will behave like a nested loop in other languages. An alternative perspective on the ranged for expression is that it resembles a universal quantifier, with `for i on [1, 7] P(i)` meaning *∀ i ∈ [1,7] P(i)*. This interpretation explains the existence of the other type of for expressions as well.
+Just like aggregates, multiple variables can be declared in the loop header, which will behave like a nested loop in other languages. The `to` clause is also usable instead of `on`, as in aggregates.
+
+An alternative perspective on the ranged for expression is that it resembles a universal quantifier, with `for i on [1, 7] P(i)` meaning *∀ i ∈ [1,7] P(i)*. This interpretation explains the existence of the other type of for expressions as well.
 
 ### Universal For Expressions
 Universal for expressions are a notation for the `(forall ...)` operator in SMTLib (and mathematics). It allows you to make a claim about all possible values of one or more variables in a given type. The syntax for universal for expressions is:

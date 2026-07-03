@@ -593,6 +593,9 @@ class Evaluator {
 	Show(node) {
 		this.shown.add(this.getName(node.ref));
 	}
+	Print(node) {
+		console.log(`print: ${this.visit(node.target)}`);
+	}
 	LiteralType(node) {
 		return new LiteralType(node.name);
 	}

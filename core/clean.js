@@ -23,6 +23,12 @@ const expandSubscriptRanges = root => {
 	});
 };
 
+const expandShortRanges = root => {
+	root.forEach(AST.FiniteRange, node => {
+		node.lo ??= make.Number("1").from(node);
+	});
+};
+
 export function clean(root) {
 	root.forEach([AST.Block, AST.root], node => {
 		node.stmts ??= [];
@@ -41,6 +47,7 @@ export function clean(root) {
 		}
 	});
 
+	expandShortRanges(root);
 	expandSubscriptRanges(root);
 
 	AST.debugRoot = root;
