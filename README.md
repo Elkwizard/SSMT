@@ -4,10 +4,10 @@ SSMT is a minimalist macro language for writing [SMTLib](https://smt-lib.org/) p
 The language can be used in two ways:
 
 ### Command Line Interface
-After cloning the repository, create a shell script which forwards all of its arguments to an SMTLib solver such as cvc5 or z3. Suppose this shell script is at `/SOMEPATH/solve.sh`. Then, the cli can be invoked as follows from within the repository:
+After cloning the repository, create a shell script which forwards all of its arguments to an SMTLib solver such as cvc5 or z3. Suppose this shell script is at `SOMEPATH/solve.sh`. Then, the cli can be invoked as follows from within the repository:
 
 ```sh
-node cli.js --solver /SOMEPATH/solve.sh /OTHERPATH/SSMTFILE.ssmt
+node cli.js --solver SOMEPATH/solve.sh OTHERPATH/SSMTFILE.ssmt
 ```
 
 ### Interactive Compiler
