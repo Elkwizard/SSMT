@@ -37,7 +37,7 @@
 				"match": "\\bnew\\b"
 			}, {
 				"name": "keyword.control",
-				"match": "\\b(for|on|of|to|logic)\\b"
+				"match": "\\b(for|on|of|to|logic|print)\\b"
 			}, {
 				"name": "punctuation.separator.comma",
 				"match": "[_,.]"

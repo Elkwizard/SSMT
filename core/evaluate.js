@@ -60,6 +60,9 @@ class Fn {
 	call(args) {
 		return this.impl(...args);
 	}
+	toString() {
+		return "fn";
+	}
 }
 
 class LispExpr {
@@ -268,7 +271,7 @@ class Scope {
 }
 
 class Evaluator {
-	constructor(inputs) {
+	constructor(inputs, print) {
 		this.inputs = inputs;
 		this.logic = null;
 		this.shown = new Set();
@@ -276,6 +279,7 @@ class Evaluator {
 		this.scope = this.vars;
 		this.defaultType = new LiteralType("Int");
 		this.types = new Set();
+		this.print = print;
 
 		this.push();
 		this.assign("InputCount", new Num(inputs.length));
@@ -594,7 +598,10 @@ class Evaluator {
 		this.shown.add(this.getName(node.ref));
 	}
 	Print(node) {
-		console.log(`print: ${this.visit(node.target)}`);
+		this.print(
+			String(this.visit(node.target)),
+			node.lineNumber ?? "unknown"
+		);
 	}
 	LiteralType(node) {
 		return new LiteralType(node.name);
@@ -650,7 +657,7 @@ class Evaluator {
 	}
 }
 
-export function evaluate(root, inputs) {
-	const evaluator = new Evaluator(inputs);
+export function evaluate(root, inputs, print) {
+	const evaluator = new Evaluator(inputs, print);
 	return evaluator.visit(root);
 }

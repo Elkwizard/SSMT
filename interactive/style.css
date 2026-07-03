@@ -3,6 +3,7 @@
 	padding: 0;
 	box-sizing: border-box;
 	font-family: sans-serif;
+	tab-size: 2ch;
 }
 
 :root {
@@ -28,36 +29,58 @@ h1 {
 }
 
 #panels {
-	display: flex;
-	flex-direction: row;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 2fr 1fr;
+	gap: 1em;
 	width: 100%;
-
-
-	> :first-child {
-		border-right: 1px var(--white) solid;
-	}
-
-	> * {
-		flex-basis: 0;
-		flex-grow: 1;
-	}
-}
-
-
-#output, #input {
-	overflow: auto;
-	border: 1px var(--white) solid;
-	padding: 0.75em;
 	height: calc(100vh - 8.5rem);
-
+	
 	&, * {
 		font-family: "Cascadia Code", monospace;
 	}
 }
 
+#output, #input, #prints {
+	overflow: auto;
+	border: 1px var(--white) solid;
+	padding: 0.75em;
+}
+
+#input {
+	grid-row: 1/3;
+	grid-column: 1;
+}
+
+#prints {
+	color: var(--white);
+	grid-column: 2;
+	grid-row: 2;
+	padding: 0;
+
+	&::before {
+		content: "Logs";
+		display: block;
+		padding: 0.2em;
+		font-weight: bold;
+		border-bottom: 2px var(--white) solid;
+	}
+
+	li {
+		display: flex;
+		padding: 0.2em;
+		border-bottom: 1px var(--white) solid;
+		white-space: pre;
+
+		&::after {
+			content: "line " attr(data-line);
+			margin-left: auto;
+		}
+	}
+}
+
 #input {
 	resize: none;
-	tab-size: 2ch;
 	color: var(--black);
 }
 

@@ -8,7 +8,12 @@ addEventListener("message", event => {
 	const { ssmt, inputs } = event.data;
 	try {
 		const root = clean(parse(ssmt));
-		const { smtlib } = evaluate(root, inputs);
+		const { smtlib } = evaluate(
+			root, inputs,
+			(message, line) => {
+				postMessage({ type: "print", message, line });
+			}
+		);
 		postMessage({
 			type: "success",
 			smtlib

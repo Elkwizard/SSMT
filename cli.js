@@ -30,7 +30,10 @@ const {
 const content = fs.readFileSync(file, "utf-8");
 
 const root = clean(parse(content));
-const { smtlib, shown } = evaluate(root, inputs.map(input => +input));
+const { smtlib, shown } = evaluate(
+	root, inputs.map(input => +input),
+	(msg, loc) => console.log(`line ${loc} | print: ${msg}`)
+);
 const outPath = file.replace(/\.ssmt$/, ".smt2");
 
 fs.writeFileSync(outPath, smtlib, "utf-8");

@@ -201,6 +201,12 @@ RightCount => IsValid(Input_2..InputCount)
 
 **Note:** Since this problem only depends on its inputs and declares no SMT variables, it compiles down to simply `(assert true)` or `(assert false)` in SMTLib.
 
+## Print Statements
+To debug the behavior of SSMT's *Compile Time* execution, you can add `print` statements to see the value of expressions. This feature is supported in both the browser and CLI. To print an expression, use the following syntax:
+```py
+print x * 3 + 1
+```
+
 ## Result Summaries
 Sometimes in SMT instances, only a few variables are actually interesting to look at in the case of satisfiability. If this is the case, the `show` command can be used to display only a subset of results. If no variables are shown, then all variables are considered shown. **Note**: This feature only has an effect if the CLI is used to solve the SSMT program. It has no effect on the resulting SMTLib code.
 

@@ -39,6 +39,7 @@ const updateOutput = async () => {
 	const output = $("#output");
 	output.className = "compiling";
 	output.innerText = "Compiling...";
+	$("#prints").innerHTML = "";
 	
 	const compilation = new Promise((resolve, reject) => {
 		compileWorker.addEventListener("message", event => {
@@ -46,10 +47,15 @@ const updateOutput = async () => {
 
 			if (message.type === "success") {
 				resolve(message.smtlib);
-			} else {
+			} else if (message.type === "error") {
 				reject(message.error);
+			} else if (message.type === "print") {
+				const log = document.createElement("li");
+				log.innerText = message.message;
+				log.dataset.line = message.line;
+				$("#prints").appendChild(log);
 			}
-		}, { once: true });
+		});
 		
 		compileWorker.postMessage({ ssmt, inputs });
 	});
