@@ -11,7 +11,7 @@ const escapeHTML = text => {
 };
 
 const applyANSIColors = ansi => {
-	return ansi.replace(/(?:\x1b\[(\d+)m(.*?))?\x1b\[0m/g, (_, color, text) => {
+	return ansi.replace(/(?:\x1b\[([^0]\d+)m(.*?))?\x1b\[0m/g, (_, color, text) => {
 		if (!color) return "";
 		return `<span style="background-color: red; color: white;">${text}</span>`;
 	});
@@ -35,7 +35,8 @@ const updateOutput = () => {
 	} catch (err) {
 		compiledOutput = "";
 		$("#output").className = "error";
-		$("#output").innerHTML = applyANSIColors(escapeHTML(err.stack));
+		const errText = innerWidth < 800 ? `${err.message}\n${err.stack}` : err.stack;
+		$("#output").innerHTML = applyANSIColors(escapeHTML(errText));
 	}
 };
 
