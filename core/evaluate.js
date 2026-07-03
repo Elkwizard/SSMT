@@ -114,6 +114,19 @@ const chain = (...fns) => {
 
 const compare = fn => fold([Num, Num], Bool, fn);
 const math = fn => fold(new Array(fn.length).fill(Num), Num, fn);
+const logical = unit => (...args) => {
+	if (args.length !== 2) return null;
+	const [a, b] = args;
+
+	if (unit.equals(a)) return b;
+	if (unit.equals(b)) return a;
+
+	const short = new Bool(!unit.value);
+	if (short.equals(a)) return a;
+	if (short.equals(b)) return b;
+
+	return null;
+};
 
 const OPERATORS = {
 	"+": math((a, b) => a + b),
@@ -129,22 +142,8 @@ const OPERATORS = {
 	"<=": compare((a, b) => a <= b),
 	">=": compare((a, b) => a >= b),
 	"=": compare((a, b) => a === b),
-	"and": chain(
-		fold([Bool, Bool], Bool, (a, b) => a && b),
-		(a, b) => {
-			if (Bool.F.equals(a) || Bool.F.equals(b))
-				return Bool.F;
-
-			if (Bool.T.equals(a)) return b;
-			if (Bool.T.equals(b)) return a;
-
-			return null;
-		}
-	),
-	"or": chain(
-		fold([Bool, Bool], Bool, (a, b) => a || b),
-		short((a, b) => Bool.T.equals(a) || Bool.T.equals(b), () => Bool.T)
-	),
+	"and": logical(Bool.T),
+	"or": logical(Bool.F),
 	"not": chain(
 		fold([Bool], Bool, a => !a)
 	),
@@ -417,6 +416,16 @@ class Evaluator {
 		return smt(op, left, right);
 	}
 	Logic(node) {
+		const left = this.visit(node.left);
+
+		if (left instanceof Bool) {
+			if (node.op === "or")
+				return left.value ? left : this.visit(node.right);
+			
+			if (node.op === "and")
+				return left.value ? this.visit(node.right) : left;
+		}
+
 		return this.Binary(node);
 	}
 	Sum(node) {
@@ -554,7 +563,7 @@ class Evaluator {
 			this.checkParams(fn.length, args.length);
 
 			if (!args.every(arg => arg instanceof Num))
-				throw `All arguments to built-in functions must be numeric`;
+				throw `All arguments to built-in functions must be numeric, got: ${args.join(", ")}`;
 
 			return new Num(fn(...args.map(arg => arg.value)));
 		});

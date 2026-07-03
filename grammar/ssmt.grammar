@@ -62,7 +62,7 @@ Index = tuple:Expression $IndexSuffix
 		left Product ("*" | "/" | "%")
 		custom Aggregate (type:AggregateType range:FiniteRange "of" body:Aggregate)
 		left Sum ("+" | "-")
-		custom Compare (values:last{ops:("<" | ">" | "<=" | ">=" | "=")})
+		custom Compare (values:last{ops:("<" | ">" | "<=" | ">=" | "=" | "!=")})
 		left Logic ("and" | "or")
 		right Implies ("=>")
 		custom Loop ("for" range:(FiniteRange | UniversalRange) body:Statement)
@@ -83,4 +83,4 @@ Index = tuple:Expression $IndexSuffix
 	Statement = Show | SetLogic | Declare | Assign | Expression
 @end
 
-root = stmts:Statement*
+root = stmts:Statement{";"?}
