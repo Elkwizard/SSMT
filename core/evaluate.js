@@ -110,11 +110,14 @@ const chain = (...fns) => {
 };
 
 const compare = fn => fold([Num, Num], Bool, fn);
-const math = fn => fold([Num, Num], Num, fn);
+const math = fn => fold(new Array(fn.length).fill(Num), Num, fn);
 
 const OPERATORS = {
 	"+": math((a, b) => a + b),
-	"-": math((a, b) => a - b),
+	"-": chain(
+		math((a, b) => a - b),
+		math(a => -a)
+	),
 	"*": math((a, b) => a * b),
 	"%": math((a, b) => a % b),
 	"^": math((a, b) => a ** b),
@@ -525,6 +528,8 @@ class Evaluator {
 			this.assign(name, new Var(name, domain));
 		const body = this.visit(node.body);
 		this.pop();
+
+		if (!body) return null;
 
 		return smt("forall", smt(
 			...vars.map(name => smt(name, domain.toSMT()))
