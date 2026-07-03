@@ -110,12 +110,14 @@ const chain = (...fns) => {
 };
 
 const compare = fn => fold([Num, Num], Bool, fn);
+const math = fn => fold([Num, Num], Num, fn);
 
-const OPERANDS = {
-	"+": fold([Num, Num], Num, (a, b) => a + b),
-	"-": fold([Num, Num], Num, (a, b) => a - b),
-	"*": fold([Num, Num], Num, (a, b) => a * b),
-	"%": fold([Num, Num], Num, (a, b) => a % b),
+const OPERATORS = {
+	"+": math((a, b) => a + b),
+	"-": math((a, b) => a - b),
+	"*": math((a, b) => a * b),
+	"%": math((a, b) => a % b),
+	"^": math((a, b) => a ** b),
 	"<": compare((a, b) => a < b),
 	">": compare((a, b) => a > b),
 	"<=": compare((a, b) => a <= b),
@@ -155,7 +157,7 @@ const OPERANDS = {
 };
 
 function smt(op, ...args) {
-	return OPERANDS[op]?.(...args) ?? new LispExpr(op, args);
+	return OPERATORS[op]?.(...args) ?? new LispExpr(op, args);
 }
 
 function* enumerate(dims, size) {
@@ -441,6 +443,9 @@ class Evaluator {
 		return smt(op, this.visit(node.target));
 	}
 	Implies(node) {
+		return this.Binary(node);
+	}
+	Power(node) {
 		return this.Binary(node);
 	}
 	Compare(node) {

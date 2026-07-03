@@ -47,6 +47,7 @@ Index = tuple:Expression $IndexSuffix
 	Expression = operators Term {
 		custom Aggregate (type:AggregateType range:FiniteRange "of" body:Aggregate)
 		prefix Prefix ("-" | "~")
+		right Power ("^")
 		left Product ("*" | "/" | "%")
 		left Sum ("+" | "-")
 		custom Compare (values:last{ops:("<" | ">" | "<=" | ">=" | "=")})
