@@ -49,6 +49,19 @@ addEventListener("input", () => {
 addEventListener("load", () => {
 	$("#input").focus();
 
+	$("#input").addEventListener("keydown", event => {
+		if (event.key !== "Tab") return;
+		
+		event.preventDefault();
+		const area = $("#input");
+
+		const start = area.selectionStart;
+		const end = area.selectionEnd;
+
+		area.value = area.value.slice(0, start) + "\t" + area.value.slice(end);
+		area.selectionStart = area.selectionEnd = start + 1;
+	});
+
 	$("#copyOutput").addEventListener("click", () => {
 		navigator.clipboard.writeText(compiledOutput);
 		alert("Copied!");

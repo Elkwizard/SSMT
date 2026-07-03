@@ -54,12 +54,17 @@ h1 {
 
 #input {
 	resize: none;
+	tab-size: 2ch;
 	color: var(--black);
 }
 
 #output {
 	color: var(--white);
 	font-size: 0.8em;
+
+	* {
+		white-space: pre;
+	}
 }
 
 #inputRow {
