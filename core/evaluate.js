@@ -135,6 +135,7 @@ const OPERATORS = {
 		math(a => -a)
 	),
 	"*": math((a, b) => a * b),
+	"/": math((a, b) => a / b),
 	"%": math((a, b) => a % b),
 	"^": math((a, b) => a ** b),
 	"<": compare((a, b) => a < b),
