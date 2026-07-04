@@ -28,7 +28,7 @@ body {
 		"config config"
 		"input output"
 		"input print";
-	height: 100vh;
+	height: 100dvh;
 }
 
 #header {
