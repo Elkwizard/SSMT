@@ -159,3 +159,22 @@ body {
 button {
 	cursor: pointer;
 }
+
+#notification {
+	pointer-events: none;
+	opacity: 0;
+	position: absolute;
+	left: 50%;
+	top: 1em;
+	transform: translateX(-50%) translateY(calc(-100% - 1em));
+	padding: 1em;
+	background: white;
+	border-radius: 0.3em;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+	transition: all 0.3s;
+
+	&.visible {
+		opacity: 1;
+		transform: translateX(-50%) translateY(0);
+	}
+}

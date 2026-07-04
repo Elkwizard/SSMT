@@ -106,6 +106,18 @@ addEventListener("input", () => {
 	timerId = setTimeout(updateOutput, 300);
 });
 
+let notifyId = null;
+const notify = (message, duration) => {
+	const note = $("#notification");
+	note.classList.add("visible");
+	note.textContent = message;
+
+	if (notifyId !== null) clearTimeout(notifyId);
+	notifyId = setTimeout(() => {
+		note.classList.remove("visible");
+	}, duration);
+};
+
 addEventListener("load", () => {
 	$("#input").focus();
 
@@ -129,7 +141,7 @@ addEventListener("load", () => {
 
 	$("#copyOutput").addEventListener("click", () => {
 		navigator.clipboard.writeText(compiledOutput);
-		alert("Copied!");
+		notify("Copied!", 1000);
 	});
 
 	updateHighlight();
