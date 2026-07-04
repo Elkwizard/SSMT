@@ -48,6 +48,7 @@ let compiledOutput = "";
 const updateOutput = async () => {
 	const code = $("#input").value;
 	const inputs = $("#inputs").value
+		.trim()
 		.split(" ")
 		.map(input => +input.trim());
 	const logic = $("#logic").value;
