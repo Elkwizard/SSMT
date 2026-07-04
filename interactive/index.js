@@ -119,8 +119,6 @@ const notify = (message, duration) => {
 };
 
 addEventListener("load", () => {
-	$("#input").focus();
-
 	$("#input").value = localStorage[LS_KEY] ?? "";
 
 	$("#input").addEventListener("keydown", event => {
