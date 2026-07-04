@@ -25,10 +25,13 @@
 				"match": "\\b(distinct|sum|show)\\b"
 			}, {
 				"name": "storage.type",
-				"match": "->|:=|:|\\b(Int|Bool|Real)\\b|type|default|fn|prop|weak"
+				"match": "->|\\b(Int|Bool|Real)\\b|type|default|fn|prop|weak"
 			}, {
 				"name": "constant.language.boolean",
 				"match": "\\b(true|false)\\b"
+			}, {
+				"name": "keyword.operator.assignment",
+				"match": ":=?"
 			}, {
 				"name": "keyword.operator.arithmetic",
 				"match": "-|\\^|\\+|\\*|%|\\/|~|\\b(or|and)\\b|=>"

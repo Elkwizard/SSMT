@@ -208,3 +208,7 @@ button {
 		background: red;
 	}
 }
+
+.tm-storage-type {
+	font-style: italic;
+}
