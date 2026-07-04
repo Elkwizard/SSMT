@@ -25,13 +25,16 @@
 				"match": "\\b(distinct|sum|show)\\b"
 			}, {
 				"name": "storage.type",
-				"match": "->|:=|=|:|\\b(Int|Bool|Real)\\b|<=|>=|<|>|!=|type|default|fn|prop|weak"
+				"match": "->|:=|:|\\b(Int|Bool|Real)\\b|type|default|fn|prop|weak"
 			}, {
 				"name": "constant.language.boolean",
 				"match": "\\b(true|false)\\b"
 			}, {
 				"name": "keyword.operator.arithmetic",
 				"match": "-|\\^|\\+|\\*|%|\\/|~|\\b(or|and)\\b|=>"
+			}, {
+				"name": "keyword.operator.comparison",
+				"match": "!=|=|<|>|<=|>="
 			}, {
 				"name": "keyword.operator.new",
 				"match": "\\bnew\\b"
@@ -49,14 +52,8 @@
 		},
 		"identifiers": {
 			"patterns": [{
-				"name": "support.function",
-				"match": "[A-Z][^\\W_]*(?=\\s*\\()"
-			}, {
 				"name": "entity.name.function",
-				"match": "[^\\W_]+(?=\\s*(\\(|:=\\s*fn\\b))"
-			}, {
-				"name": "support.variable",
-				"match": "[A-Z][^\\W_]*"
+				"match": "(?<!\\bto\\s*)[^\\W_]+(?=\\s*(\\(|:=\\s*fn\\b|:.*?->))"
 			}, {
 				"name": "variable.name",
 				"match": "[^\\W_]+"

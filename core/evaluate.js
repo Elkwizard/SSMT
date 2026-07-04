@@ -142,6 +142,7 @@ const OPERATORS = {
 	"<=": compare((a, b) => a <= b),
 	">=": compare((a, b) => a >= b),
 	"=": compare((a, b) => a === b),
+	"!=": compare((a, b) => a !== b),
 	"and": logical(Bool.T),
 	"or": logical(Bool.F),
 	"not": chain(

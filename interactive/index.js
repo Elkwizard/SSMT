@@ -1,6 +1,9 @@
 import { clean } from "../core/clean.js";
 import { evaluate } from "../core/evaluate.js";
 import { parse } from "../grammar/parse.js";
+import { highlight } from "https://elkwizard.github.io/TMHighlighter/html.js";
+import { Theme } from "https://elkwizard.github.io/TMHighlighter/themes.js";
+import tmSyntax from "../ssmt-language-support/syntaxes/ssmt.tmLanguage.json" with { type: "json" };
 
 const $ = document.querySelector.bind(document);
 
@@ -15,7 +18,29 @@ const applyANSIColors = ansi => {
 		if (!color) return "";
 		return `<span style="background-color: red; color: white;">${text}</span>`;
 	});
-}
+};
+
+const THEME = new Theme({
+	"comment": "#888",
+	"constant": "#d85",
+	"keyword": "#828",
+	"storage": "#62e",
+	"entity.name.function": "#373",
+	"punctuation": "#888"
+}, "#222");
+
+const LS_KEY = "SSMT_Interactive_Compiler_Code";
+
+const updateHighlight = () => {
+	$("#highlighting").innerHTML = highlight(
+		$("#input").value, tmSyntax, THEME
+	);
+};
+
+const updateHighlightScroll = () => {
+	$("#highlighting").scrollTop = $("#input").scrollTop;
+	$("#highlighting").scrollLeft = $("#input").scrollLeft;
+};
 
 let compileWorker = null;
 let compiledOutput = "";
@@ -27,7 +52,7 @@ const updateOutput = async () => {
 		.map(input => +input.trim());
 	const logic = $("#logic").value;
 
-	const ssmt = `logic ${logic}\n${code}`;
+	const ssmt = `logic ${logic} ${code}`;
 
 	compileWorker?.terminate();
 	compileWorker = new Worker("./compile.js", { type: "module" });
@@ -65,6 +90,7 @@ const updateOutput = async () => {
 		compiledOutput = smtlib;
 		output.className = "output";
 		output.innerText = smtlib;
+		localStorage[LS_KEY] = code;
 	} catch (err) {
 		compiledOutput = "";
 		output.className = "error";
@@ -75,12 +101,15 @@ const updateOutput = async () => {
 
 let timerId = null;
 addEventListener("input", () => {
+	updateHighlight();
 	if (timerId !== null) clearTimeout(timerId);
 	timerId = setTimeout(updateOutput, 300);
 });
 
 addEventListener("load", () => {
 	$("#input").focus();
+
+	$("#input").value = localStorage[LS_KEY] ?? "";
 
 	$("#input").addEventListener("keydown", event => {
 		if (event.key !== "Tab") return;
@@ -93,12 +122,16 @@ addEventListener("load", () => {
 
 		area.value = area.value.slice(0, start) + "\t" + area.value.slice(end);
 		area.selectionStart = area.selectionEnd = start + 1;
+		updateHighlight();
 	});
+
+	$("#input").addEventListener("scroll", updateHighlightScroll);
 
 	$("#copyOutput").addEventListener("click", () => {
 		navigator.clipboard.writeText(compiledOutput);
 		alert("Copied!");
 	});
 
+	updateHighlight();
 	updateOutput();
 });
