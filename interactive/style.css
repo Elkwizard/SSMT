@@ -4,7 +4,7 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	font-family: sans-serif;
+	font-family: var(--sans-serif);
 	tab-size: 2ch;
 }
 
@@ -13,6 +13,8 @@
 	--black: black;
 	--blue: #563456;
 	--gray: #ddd;
+	--monospace: "Cascadia Code", monospace;
+	--sans-serif: Arial, sans-serif;
 }
 
 body {
@@ -32,6 +34,10 @@ body {
 }
 
 #header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 1rem;
 	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 	letter-spacing: 0.1ch;
 	font-weight: normal;
@@ -39,15 +45,22 @@ body {
 	grid-area: header;
 }
 
-#fileStatus:not(:empty) {
-	position: relative;
-	bottom: 0.05em;
+#fileStatus {
+	letter-spacing: normal;
+	font-family: var(--sans-serif);
+	font-size: 1.5rem;
+}
 
-	&::before { content: "["; }
-	&::after { content: "]"; }
-
+#ssmtFileStatus:not(:empty) {
 	.unsaved &::after {
-		content: "*]";
+		content: "*";
+	}
+}
+
+#smtFileStatus:not(:empty) {
+	&::before {
+		content: "▶ ";
+		padding-left: 0.15em;
 	}
 }
 
@@ -57,7 +70,7 @@ body {
 	padding: 0.75em;
 	
 	&, * {
-		font-family: "Cascadia Code", monospace;
+		font-family: var(--monospace);
 	}
 }
 
@@ -137,19 +150,6 @@ body {
 		label {
 			color: var(--white);
 		}
-
-		> :last-child  {
-			background: var(--white);
-			padding: 0.3em;
-			border-radius: 0.3em;
-			color: var(--black);
-			border: none;
-			font-size: 1rem;
-
-			&:hover {
-				background: var(--gray);
-			}
-		}
 	}
 
 	> :last-child {
@@ -166,6 +166,19 @@ body {
 			width: 3em;
 		}
 	}	
+}
+
+#inputRow > * > :last-child, button {
+	background: var(--white);
+	padding: 0.3em;
+	border-radius: 0.3em;
+	color: var(--black);
+	border: none;
+	font-size: 1rem;
+
+	&:hover {
+		background: var(--gray);
+	}
 }
 
 button {

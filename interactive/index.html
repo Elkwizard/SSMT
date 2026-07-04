@@ -11,7 +11,10 @@
 <body>
 	<h1 id="header">
 		SSMT Interactive Compiler
-		<span id="fileStatus"></span>
+		<span id="fileStatus">
+			<span id="ssmtFileStatus"></span>
+			<span id="smtFileStatus"></span>
+		</span>
 	</h1>
 	<div id="inputRow">
 		<div>
@@ -53,6 +56,13 @@
 			</select>
 		</div>
 		<div>
+			<label for="openButton saveButton saveAsButton">SSMT File:</label>
+			<button id="openButton">Open</button>
+			<button id="saveButton">Save</button>
+			<button id="saveAsButton">Save As</button>
+		</div>
+		<div>
+			<button id="setOutputFile">Set Output File</button>
 			<button id="copyOutput">Copy SMTLib</button>
 		</div>
 	</div>

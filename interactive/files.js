@@ -1,16 +1,20 @@
 export class FileContext {
 	static ID = "ssmt-interactive-compiler";
-	constructor() {
+	constructor(ext) {
+		this.ext = ext;
 		this.handle = null;
 	}
 	get filename() {
 		return this.handle?.name;
 	}
-	async save(content, saveAs) {
+	async close() {
+		this.handle = null;
+	}
+	async save(content, saveAs, basename = "untitled") {
 		if (saveAs || !this.handle) {
 			this.handle = await showSaveFilePicker({
 				id: FileContext.ID,
-				suggestedName: "untitled.ssmt"
+				suggestedName: `${basename}.${this.ext}`
 			});
 		}
 

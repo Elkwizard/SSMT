@@ -99,6 +99,7 @@ const updateOutput = async () => {
 		output.className = "output";
 		output.innerText = smtlib;
 		localStorage[LS_KEY] = code;
+		if (smtlibFile.filename) smtlibFile.save(smtlib, false);
 	} catch (err) {
 		compiledOutput = "";
 		output.className = "error";
@@ -137,16 +138,22 @@ const handleTab = () => {
 	changeText();
 };
 
-const files = new FileContext();
+const ssmtFile = new FileContext("ssmt");
+const smtlibFile = new FileContext("smt2");
+
+const syncFileNames = () => {
+	$("#ssmtFileStatus").textContent = ssmtFile.filename ?? "";
+	$("#smtFileStatus").textContent = smtlibFile.filename ?? "";
+};
 
 const syncFile = () => {
 	document.body.classList.remove("unsaved");
-	$("#fileStatus").textContent = files.filename;
+	syncFileNames();
 };
 
 const saveFile = async saveAs => {
 	try {
-		await files.save($("#input").value, saveAs);
+		await ssmtFile.save($("#input").value, saveAs);
 		syncFile();
 		notify("Saved!");
 	} catch (err) {
@@ -156,14 +163,30 @@ const saveFile = async saveAs => {
 
 const openFile = async () => {
 	try {
-		$("#input").value = await files.open();
+		$("#input").value = await ssmtFile.open();
+		await smtlibFile.close();
 		changeText();
 		document.body.classList.remove("unsaved");
 		syncFile();
-		notify(`Opened file '${files.filename}'!`);
+		notify(`Opened file '${ssmtFile.filename}'!`);
 	} catch (err) {
 		notify(`Failed to open file: ${err}`, "error");
 	}
+};
+
+const setOutputFile = async () => {
+	try {
+		await smtlibFile.save(compiledOutput, true, ssmtFile.filename);
+		syncFileNames();
+		notify(`Connected to output file '${smtlibFile.filename}'!`);
+	} catch (err) {
+		notify(`Failed to connect to file: ${err}`, "error");
+	}
+};
+
+const copyOutput = async () => {
+	await navigator.clipboard.writeText(compiledOutput);
+	notify("Copied!");
 };
 
 addEventListener("load", () => {
@@ -184,10 +207,12 @@ addEventListener("load", () => {
 
 	$("#input").addEventListener("scroll", updateHighlightScroll);
 
-	$("#copyOutput").addEventListener("click", () => {
-		navigator.clipboard.writeText(compiledOutput);
-		notify("Copied!");
-	});
+	$("#saveButton").addEventListener("click", () => saveFile(false));
+	$("#saveAsButton").addEventListener("click", () => saveFile(true));
+	$("#openButton").addEventListener("click", openFile);
+	
+	$("#setOutputFile").addEventListener("click", setOutputFile);
+	$("#copyOutput").addEventListener("click", copyOutput);
 
 	changeText();
 	updateOutput();
