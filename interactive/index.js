@@ -4,6 +4,7 @@ import { parse } from "../grammar/parse.js";
 import { highlight } from "https://elkwizard.github.io/TMHighlighter/html.js";
 import { Theme } from "https://elkwizard.github.io/TMHighlighter/themes.js";
 import tmSyntax from "../ssmt-language-support/syntaxes/ssmt.tmLanguage.json" with { type: "json" };
+import { FileContext } from "./files.js";
 
 const $ = document.querySelector.bind(document);
 
@@ -31,7 +32,13 @@ const THEME = new Theme({
 
 const LS_KEY = "SSMT_Interactive_Compiler_Code";
 
-const updateHighlight = () => {
+let timerId = null;
+const changeText = () => {
+	if (timerId !== null) clearTimeout(timerId);
+	timerId = setTimeout(updateOutput, 300);
+
+	document.body.classList.add("unsaved");
+	
 	$("#highlighting").innerHTML = highlight(
 		$("#input").value, tmSyntax, THEME
 	);
@@ -100,17 +107,17 @@ const updateOutput = async () => {
 	}
 };
 
-let timerId = null;
-addEventListener("input", () => {
-	updateHighlight();
-	if (timerId !== null) clearTimeout(timerId);
-	timerId = setTimeout(updateOutput, 300);
-});
+addEventListener("input", changeText);
 
 let notifyId = null;
-const notify = (message, duration) => {
+const notify = (message, type = "success") => {
+	const duration = {
+		success: 1000,
+		error: 5000
+	}[type];
+
 	const note = $("#notification");
-	note.classList.add("visible");
+	note.className = `visible ${type}`;
 	note.textContent = message;
 
 	if (notifyId !== null) clearTimeout(notifyId);
@@ -119,30 +126,70 @@ const notify = (message, duration) => {
 	}, duration);
 };
 
+const handleTab = () => {
+	const area = $("#input");
+
+	const start = area.selectionStart;
+	const end = area.selectionEnd;
+
+	area.value = area.value.slice(0, start) + "\t" + area.value.slice(end);
+	area.selectionStart = area.selectionEnd = start + 1;
+	changeText();
+};
+
+const files = new FileContext();
+
+const syncFile = () => {
+	document.body.classList.remove("unsaved");
+	$("#fileStatus").textContent = files.filename;
+};
+
+const saveFile = async saveAs => {
+	try {
+		await files.save($("#input").value, saveAs);
+		syncFile();
+		notify("Saved!");
+	} catch (err) {
+		notify(`Failed to save: ${err}`, "error");
+	}
+};
+
+const openFile = async () => {
+	try {
+		$("#input").value = await files.open();
+		changeText();
+		document.body.classList.remove("unsaved");
+		syncFile();
+		notify(`Opened file '${files.filename}'!`);
+	} catch (err) {
+		notify(`Failed to open file: ${err}`, "error");
+	}
+};
+
 addEventListener("load", () => {
 	$("#input").value = localStorage[LS_KEY] ?? "";
 
 	$("#input").addEventListener("keydown", event => {
-		if (event.key !== "Tab") return;
-		
-		event.preventDefault();
-		const area = $("#input");
-
-		const start = area.selectionStart;
-		const end = area.selectionEnd;
-
-		area.value = area.value.slice(0, start) + "\t" + area.value.slice(end);
-		area.selectionStart = area.selectionEnd = start + 1;
-		updateHighlight();
+		if (event.key === "Tab") {
+			event.preventDefault();
+			handleTab();
+		} else if (event.key.toLowerCase() === "s" && event.ctrlKey) {
+			event.preventDefault();
+			saveFile(event.shiftKey);
+		} else if (event.key === "o" && event.ctrlKey) {
+			event.preventDefault();
+			openFile();
+		}
 	});
 
 	$("#input").addEventListener("scroll", updateHighlightScroll);
 
 	$("#copyOutput").addEventListener("click", () => {
 		navigator.clipboard.writeText(compiledOutput);
-		notify("Copied!", 1000);
+		notify("Copied!");
 	});
 
-	updateHighlight();
+	changeText();
 	updateOutput();
+	syncFile();
 });
