@@ -9,7 +9,7 @@
 	<link rel="icon" href="../ssmt-language-support/Icon.svg" type="image/svg+xml">
 </head>
 <body>
-	<h1>SSMT Interactive Compiler</h1>
+	<h1 id="header">SSMT Interactive Compiler</h1>
 	<div id="inputRow">
 		<div>
 			<label for="inputs">Inputs:</label>
@@ -53,13 +53,11 @@
 			<button id="copyOutput">Copy SMTLib</button>
 		</div>
 	</div>
-	<main id="panels">
-		<div id="inputPanel">
-			<textarea id="input" spellcheck="false" placeholder="x = 5"></textarea>
-			<pre id="highlighting"></pre>
-		</div>
-		<pre id="output"></pre>
-		<ol id="prints"></ol>
-	</main>
+	<div id="inputPanel">
+		<textarea id="input" spellcheck="false" placeholder="x = 5"></textarea>
+		<pre id="highlighting"></pre>
+	</div>
+	<pre id="output"></pre>
+	<ol id="prints"></ol>
 </body>
 </html>

@@ -17,47 +17,45 @@
 
 body {
 	background: var(--blue);
-	display: flex;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: auto auto 2fr 1fr;
 	flex-direction: column;
 	gap: 1em;
 	padding: 1em;
+	grid-template-areas:
+		"header header"
+		"config config"
+		"input output"
+		"input print";
+	height: 100vh;
 }
 
-h1 {
+#header {
 	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 	letter-spacing: 0.1ch;
 	font-weight: normal;
 	color: var(--white);
-}
-
-#panels {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-template-rows: 2fr 1fr;
-	gap: 1em;
-	width: 100%;
-	height: calc(100vh - 8.5rem);
-	
-	&, * {
-		font-family: "Cascadia Code", monospace;
-	}
+	grid-area: header;
 }
 
 #output, #inputPanel > *, #prints {
 	overflow: auto;
 	border: 1px var(--white) solid;
 	padding: 0.75em;
+	
+	&, * {
+		font-family: "Cascadia Code", monospace;
+	}
 }
 
 #inputPanel {
-	grid-row: 1/3;
-	grid-column: 1;
+	grid-area: input;
 }
 
 #prints {
+	grid-area: print;
 	color: var(--white);
-	grid-column: 2;
-	grid-row: 2;
 	padding: 0;
 
 	&::before {
@@ -82,6 +80,7 @@ h1 {
 }
 
 #inputPanel {
+	grid-area: input;
 	position: relative;
 
 	> * {
@@ -111,11 +110,13 @@ h1 {
 }
 
 #output {
+	grid-area: output;
 	color: var(--white);
 	font-size: 0.8rem;
 }
 
 #inputRow {
+	grid-area: config;
 	display: flex;
 	flex-direction: row;
 	gap: 1em;
@@ -142,6 +143,17 @@ h1 {
 	> :last-child {
 		margin-left: auto;
 	}
+}
+
+@media (max-width: 37rem) {
+	#inputRow {
+		flex-direction: column;
+
+		label {
+			display: inline-block;
+			width: 3em;
+		}
+	}	
 }
 
 button {
