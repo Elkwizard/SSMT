@@ -60,7 +60,7 @@ const updateOutput = async () => {
 		.map(input => +input.trim());
 	const logic = $("#logic").value;
 
-	const ssmt = `logic ${logic} ${code}`;
+	const ssmt = `logic ${logic}\n${code}`;
 
 	compileWorker?.terminate();
 	compileWorker = new Worker("./compile.js", { type: "module" });
@@ -103,7 +103,7 @@ const updateOutput = async () => {
 	} catch (err) {
 		compiledOutput = "";
 		output.className = "error";
-		const errText = innerWidth < 800 ? `${err.message}\n${err.stack}` : err.stack;
+		const errText = err.stack.includes(err.message) ? err.stack : `${err.message}\n${err.stack}`;
 		output.innerHTML = applyANSIColors(escapeHTML(errText));
 	}
 };
