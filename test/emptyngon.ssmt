@@ -1,0 +1,66 @@
+logic UFNIRA
+
+N := Input_1
+P := Input_2
+
+type Point = (Real, Real)
+
+Cross2 := fn (a, b, c)
+	(c.1 - b.1) * (a.2 - b.2) - (c.2 - b.2) * (a.1 - b.1)
+
+Cross : Point, Point, Point -> Real
+
+for a, b, c : Point
+	Cross(a, b, c) = Cross2(a, b, c)
+
+IsColinear := fn (a, b, c) Cross(a, b, c) = 0
+
+IsConvex := fn (a, b, c) Cross(a, b, c) > 0
+
+IsConvexNGon := fn (x_1..N) {
+	for i to N
+		IsConvex(x_i, x_(i % N + 1), x_((i + 1) % N + 1))
+}
+
+Contains := fn (p_1..N, p) {
+	for i to N
+		IsConvex(p_i, p_(i % N + 1), p)
+}
+
+getPoint : Int -> Point
+
+default : Real
+
+// P_1 := new Point(-1, -1)
+// P_2 := new Point(-1, 1)
+// P_3 := new Point(1, -1)
+// P_4 := new Point(1, 1)
+// P_5 := new Point(0, 0.5)
+
+for i to P {
+	p_i : Point
+	getPoint(i) = p_i
+	show p_i
+}
+
+for i_1..3 to P
+	(distinct j to 3 of i_j) => ~IsColinear(
+		getPoint(i_1), getPoint(i_2), getPoint(i_3)
+	)
+
+Check := fn (n_1..N) {
+	for i to N x_i := getPoint(n_i)
+	IsConvexNGon(x_1..N) => or i to P of Contains(x_1..N, p_i)
+}
+
+CheckWithStart := fn (k_1..N)
+	for i_2..N on [2, N] {
+		distinct j on [2, N] of i_j =>
+			Check(k_1, ..j on [2, N] k_i_j)
+	}
+
+for i_1..N to P
+	(for j on [2, N] i_(j - 1) < i_j) =>
+		CheckWithStart(i_1..N)
+
+// 9 is the smallest number of points for which a convex pentagon is guaranteed
