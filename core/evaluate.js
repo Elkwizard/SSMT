@@ -65,6 +65,16 @@ class Fn {
 	}
 }
 
+class Tuple {
+	constructor(type, items) {
+		this.type = type;
+		this.items = items;
+	}
+	toString() {
+		return smt(this.type.id, ...this.items).toString();
+	}
+}
+
 class LispExpr {
 	constructor(op, args) {
 		this.op = op;
@@ -164,6 +174,8 @@ const OPERATORS = {
 };
 
 function smt(op, ...args) {
+	if (/^_\d+$/.test(op) && args.length === 1 && args[0] instanceof Tuple)
+		return args[0].items[op.slice(1) - 1];
 	return OPERATORS[op]?.(...args) ?? new LispExpr(op, args);
 }
 
@@ -180,7 +192,9 @@ function* enumerate(dims, size) {
 
 const AGGREGATES = {
 	distinct: null,
-	sum: "+"
+	sum: "+",
+	or: "or",
+	and: "and"
 };
 
 class Type { }
@@ -445,7 +459,7 @@ class Evaluator {
 		if (type.factors.length !== args.length)
 			node.error(`Wrong number of tuple factors. Expected ${type.factors.length}, got ${args.length}`);
 
-		return smt(type.id, ...args);
+		return new Tuple(type, args);
 	}
 	Reference(node) {
 		return this.lookup(this.getName(node));
@@ -501,7 +515,9 @@ class Evaluator {
 		const premise = this.visit(node.left);
 		if (Bool.F.equals(premise))
 			return Bool.T;
-		return smt("=>", premise, this.visit(node.right));
+		const body = this.visit(node.right);
+		if (!body) return null;
+		return smt("=>", premise, body);
 	}
 	Power(node) {
 		return this.Binary(node);
@@ -610,7 +626,7 @@ class Evaluator {
 	}
 	Print(node) {
 		this.print(
-			String(this.visit(node.target)),
+			this.visit(node.args).join(", "),
 			node.lineNumber ?? "unknown"
 		);
 	}

@@ -1,7 +1,7 @@
 whitespace = hidden /\s+/
 comment = hidden /\/\/.*/
 keyword = literals /\w+/
-number = /\d+/
+number = /\d+(\.\d+)?/
 id = /[^\W_]+/
 comma = /,\s/
 symbol = literals /\W+/
@@ -34,7 +34,7 @@ ReferenceLike = name:id ("_" indices:BaseExpression{","})?
 	Type = FnType | SimpleType
 @end
 
-AggregateType = "sum" | "distinct"
+AggregateType = "sum" | "distinct" | "or" | "and"
 CallSuffix = "(" args:ExpressionList ")"
 IndexSuffix = "." index:number
 Step = CallSuffix | IndexSuffix
@@ -64,9 +64,9 @@ Index = tuple:Expression $IndexSuffix
 		left Sum ("+" | "-")
 		custom Compare (values:last{ops:("<" | ">" | "<=" | ">=" | "=" | "!=")})
 		left Logic ("and" | "or")
+		custom Print ("print" "(" args:ExpressionList ")" | "print" arg:last)
 		right Implies ("=>")
 		custom Loop ("for" range:(FiniteRange | UniversalRange) body:Statement)
-		prefix Print ("print")
 	}
 @end
 

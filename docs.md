@@ -106,9 +106,11 @@ Certain operations are commonly performed over contiguous ranges of integers, in
 ```js
 sum i, j on [1, 5] of x_i,j = 50
 ```
-This implicitly declares 25 subscripted `x_*` SMT variables of type `Int` and asserts that their sum is 50. This particular `sum` would typically require a nested for loop in most languages, but SSMT uses a more mathematical notation, and implicitly iterates over all combinations of two integers in the range `[1, 5]`. Currently, only two aggregates exist, but more are likely to be added in the future:
+This implicitly declares 25 subscripted `x_*` SMT variables of type `Int` and asserts that their sum is 50. This particular `sum` would typically require a nested for loop in most languages, but SSMT uses a more mathematical notation, and implicitly iterates over all combinations of two integers in the range `[1, 5]`. Currently, only four aggregates exist, but more are likely to be added in the future:
 * `sum`: Adds together a collection of values
 * `distinct`: True iff all values are distinct
+* `and`: ANDs together a collection of values
+* `or`: ORs together a collection of values
 
 These aggregates all use the same syntax as `sum`, just with a different initial keyword.
 

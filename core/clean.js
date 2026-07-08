@@ -47,6 +47,10 @@ export function clean(root) {
 		}
 	});
 
+	root.forEach(AST.Print, node => {
+		node.args ??= make.ExpressionList([node.arg]);
+	});
+
 	expandShortRanges(root);
 	expandSubscriptRanges(root);
 
