@@ -1,0 +1,14 @@
+logic UFNIRA
+
+f := fn (x) 1.0 / x
+
+L : Real
+
+for eps : Real eps > 0 => {
+	exists x : Real {
+		x > 0
+		delta := f(x) - L
+		delta < eps
+		-delta < eps
+	}
+}

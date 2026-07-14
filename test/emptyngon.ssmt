@@ -18,13 +18,23 @@ IsColinear := fn (a, b, c) Cross(a, b, c) = 0
 IsConvex := fn (a, b, c) Cross(a, b, c) > 0
 
 IsConvexNGon := fn (x_1..N) {
+	// for i to N
+	// 	for j on [2, N - 1] {
+	// 		IsConvex(x_i, x_(i % N + 1), x_((i + j - 1) % N + 1))
+	// 	}
 	for i to N
 		IsConvex(x_i, x_(i % N + 1), x_((i + 1) % N + 1))
+	
+	// pentagon-specific
+	N = 5 => {
+		IsConvex(x_1, x_2, x_4)
+		IsConvex(x_2, x_4, x_5)
+	}
 }
 
 Contains := fn (p_1..N, p) {
 	for i to N
-		IsConvex(p_i, p_(i % N + 1), p)
+		IsConvex(p_i, p_(i % N + 1), p_((i + 1) % N + 1))
 }
 
 getPoint : Int -> Point
@@ -37,10 +47,20 @@ default : Real
 // P_4 := new Point(1, 1)
 // P_5 := new Point(0, 0.5)
 
-for i to P {
-	p_i : Point
-	getPoint(i) = p_i
+Skip := 3
+
+for i to P p_i : Point
+
+p_1 = new Point(0, 0)
+p_2 = new Point(1, 0)
+p_3 = new Point(1, 1)
+
+for i on [Skip + 1, P] {
 	show p_i
+}
+
+for i to P {
+	getPoint(i) = p_i
 }
 
 for i_1..3 to P
@@ -50,7 +70,7 @@ for i_1..3 to P
 
 Check := fn (n_1..N) {
 	for i to N x_i := getPoint(n_i)
-	IsConvexNGon(x_1..N) => or i to P of Contains(x_1..N, p_i)
+	// IsConvexNGon(x_1..N) => or i to P of Contains(x_1..N, p_i)
 }
 
 CheckWithStart := fn (k_1..N)
