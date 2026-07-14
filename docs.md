@@ -142,6 +142,11 @@ for x : Int (x > 0) => P(x)
 ```
 **Note**: This syntax is not part of the universal for expression; it is simply a useful way to combine for loops and implications.
 
+### Existential For Expressions
+Nearly identical syntax can be used for logical OR and existential qualification. Simply replace `for` with `exists`:
+```rust
+exists x : Int P(x)
+```
 
 ## Blocks
 In many places where one expression is valid (such as the body of an aggregate, for expression, or function), it can be desirable to have multiple expressions or locally scoped variables. In SSMT, this is achieved with curly-braced blocks. At a surface level, blocks look similar to those in other languages, but they have some unusual characteristics that make them more suitable for phrasing SMT problems. Specifically, a block consists of an opening brace (`{`), followed by any number of assignments, assertions, and declarations, followed by a closing brace (`}`). The assignments are local to the block*, and the resulting value is the logical AND of all the assertions in the block. This might seem to imply that blocks can only produce boolean results, but AND-ing together a single value doesn't cast it to a boolean. As such, a block consisting of assignments, declarations, and a **single** expression will evaluate to that expression. An example of such a block is shown in the following example, which sums the square roots of the first 5 squares:
