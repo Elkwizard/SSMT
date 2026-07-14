@@ -398,35 +398,35 @@ class Evaluator {
 			this.pop();
 		}
 	}
-	ReferenceList(list) {
+	ListLike(list, handle) {
 		return list.pieces
 			.flatMap(piece => {
-				if (piece instanceof AST.Reference)
-					return [this.getName(piece)];
+				if (!AST.match(piece, "Variadic"))
+					return [handle(piece)];
 
 				const names = [];
 				this.forEachInRange(piece.range, () => {
-					names.push(this.getName(piece.body));
+					names.push(handle(piece.body));
 				});
 				return names;
 			});
 	}
+	ReferenceList(list) {
+		return this.ListLike(list, piece => this.getName(piece));
+	}
 	ExpressionList(list) {
-		return list.pieces
-			.flatMap(piece => {
-				if (!(piece instanceof AST.VariadicExp))
-					return [this.visit(piece)];
-
-				const values = [];
-				this.forEachInRange(piece.range, () => {
-					values.push(this.visit(piece.body));
-				});
-				return values;
-			})
+		return this.ListLike(list, piece => this.visit(piece));
+	}
+	TypeList(list) {
+		return this.ListLike(list, piece => this.visit(piece));
 	}
 	Index(node) {
+		const index = this.number(node.index).value;
+		if (!Number.isInteger(index) || index < 1)
+			node.error(`Invalid tuple index '${index}'`);
+
 		return smt(
-			`_${node.index}`,
+			`_${index}`,
 			this.visit(node.tuple)
 		);
 	}
@@ -627,7 +627,7 @@ class Evaluator {
 	}
 	FnType(node) {
 		return new FnType(
-			node.params.map(param => this.visit(param)),
+			this.visit(node.params),
 			this.visit(node.result)
 		);
 	}
@@ -644,9 +644,8 @@ class Evaluator {
 		return new LiteralType(node.name);
 	}
 	TupleType(node) {
-		const factors = node.factors
-			.map(factor => {
-				const type = this.visit(factor);
+		const factors = this.visit(node.factors)
+			.map(type => {
 				if (type instanceof FnType)
 					factor.error(`Cannot create a tuple with a function type factor '${type}'`);
 				return type;

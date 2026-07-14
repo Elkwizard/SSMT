@@ -10,12 +10,14 @@ symbol = literals /\W+/
 	VariadicLike = <E> ".." range:FiniteRange body:$E | name:id "_" lo:BaseExpression ".." hi:BaseExpression
 	VariadicExp = VariadicLike<BaseExpression>
 	VariadicRef = VariadicLike<ReferenceLike>
+	VariadicType = VariadicLike<SimpleType>
 @end
 
 @begin List
 	ListLike = <E, V> pieces:($V | $E){comma}
 	ReferenceList = ListLike<Reference, VariadicRef>
 	ExpressionList = ListLike<Expression, VariadicExp>
+	TypeList = ListLike<SimpleType, VariadicType>
 @end
 
 FiniteRange = vars:ReferenceList ("on" "[" lo:Expression comma hi:Expression "]" | "to" hi:BaseExpression)
@@ -28,15 +30,15 @@ ReferenceLike = name:id ("_" indices:BaseExpression{","})?
 		TypeReference = $ReferenceLike
 	@end
 	LiteralType = name:("Int" | "Bool" | "Real")
-	TupleType = "(" factors:SimpleType{comma} ")"
+	TupleType = "(" factors:TypeList ")"
 	SimpleType = TupleType | LiteralType | TypeReference
-	FnType = params:SimpleType{comma} "->" result:SimpleType
+	FnType = params:TypeList "->" result:SimpleType
 	Type = FnType | SimpleType
 @end
 
 AggregateType = "sum" | "distinct" | "or" | "and"
 CallSuffix = "(" args:ExpressionList ")"
-IndexSuffix = "." index:number
+IndexSuffix = "." index:BaseExpression
 Step = CallSuffix | IndexSuffix
 
 // helpers for cleaning
