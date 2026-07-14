@@ -368,6 +368,14 @@ class Evaluator {
 
 		return real.reduce((a, b) => smt("and", a, b));
 	}
+	or(node, values) {
+		const real = values.filter(Boolean);
+
+		if (!real.length)
+			return Bool.F;
+
+		return real.reduce((a, b) => smt("or", a, b));
+	}
 	evalScope(node, strong) {
 		this.push();
 		this.scope.strong = strong;
@@ -544,12 +552,14 @@ class Evaluator {
 		return new Bool(node.value === "true");
 	}
 	Loop(node) {
+		const forall = node.type === "for";
+
 		if (node.range instanceof AST.FiniteRange) {
 			const result = [];
 			this.forEachInRange(node.range, () => {
 				result.push(this.visit(node.body));
 			});
-			return this.and(node, result);
+			return forall ? this.and(node, result) : this.or(node, result);
 		}
 
 		const domain = this.visit(node.range.type);
@@ -562,7 +572,7 @@ class Evaluator {
 
 		if (!body) return null;
 
-		return smt("forall", smt(
+		return smt(forall ? "forall" : "exists", smt(
 			...vars.map(name => smt(name, domain.toSMT()))
 		), body);
 	}
